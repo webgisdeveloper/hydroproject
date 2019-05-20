@@ -14,6 +14,8 @@ import sys
 import argparse
 import pandas as pd
 
+from settings import *
+
 def csv2shapefile(csvfile):
     """ main module to process csv file and generate shapefile"""
 
@@ -26,9 +28,9 @@ def csv2shapefile(csvfile):
     variable_list = ["PRECIPmm","ETmm","SWmm","PERCmm", "GW_Qmm","FLOW_OUTcms","WYLDmm"]
     # rcp: Emissions Scenario
     # Medium" = "45", "High" = "85","Historical" = "historical"
-    rcp_list = ["45","85","HIST"]
+    rcp_list = ["45","85","hist"]
     # period: time period
-    period_list = ["2020","2050","2080","HIST"]
+    period_list = ["2020","2050","2080","hist"]
     # stype: Summary Type
     # "Mean Annual Values" = "value"
     # "Percent Change in Mean Annual" = "pct"
@@ -36,9 +38,17 @@ def csv2shapefile(csvfile):
     stype_list = ["value","pct","abs"]
 
     data = pd.read_csv(csvfile)
+    # drop the first column
+    data.drop(data.columns[[0]],axis=1,inplace=True)
 
-    selectdata = data[(data['variable']=="ETmm") & (data['period']=="2050") & (data["rcp"]=="45")]
-    print(selectdata.shape)
+    selectdata = data[(data['variable']=="GW_Qmm") & (data['period']=="2020") & (data["rcp"]=="45")]
+    # drop duplicates data
+    if selectdata.shape[0] > TOTAL_NUMBER_OF_SUBBASIN:
+        print(selectdata.shape)
+        selectdata = selectdata.drop_duplicates(subset=["subbasin"])
+        print(selectdata.shape)
+        print(selectdata.head())
+        print(selectdata.tail())
 
 
 def main():
