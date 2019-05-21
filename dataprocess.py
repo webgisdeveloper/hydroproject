@@ -13,8 +13,33 @@ import os
 import sys
 import argparse
 import pandas as pd
+import shapefile
 
 from settings import *
+
+
+def addvalue2shpfile(value_list,newshpfile="data/test.shp", fieldname="value"):
+    """ add value filed to shapefile """
+
+    shpfile = "data/WatershedsHUC12_WGS84.shp"
+
+    # read the existing shapefile
+    r = shapefile.Reader(shpfile)
+
+    # create a new shapefile in memory
+    w = shapefile.Writer(newshpfile)
+
+    w.fields = r.fields[1:] # skip first deletion field
+    w.field(fieldname,"F",decimal=8)
+    print(w.fields)
+
+    for i in range(len(r.records())):
+        rec = r.record(i)
+        rec.append(value_list.iloc[i]['value'])
+        w.record(*rec)
+        w.shape(r.shape(i))
+
+    w.close()
 
 def csv2shapefile(csvfile):
     """ main module to process csv file and generate shapefile"""
@@ -41,7 +66,7 @@ def csv2shapefile(csvfile):
     # drop the first column
     data.drop(data.columns[[0]],axis=1,inplace=True)
 
-    selectdata = data[(data['variable']=="GW_Qmm") & (data['period']=="2020") & (data["rcp"]=="45")]
+    selectdata = data[(data['variable']=="ETmm") & (data['period']=="hist") & (data["rcp"]=="hist")]
     # drop duplicates data
     if selectdata.shape[0] > TOTAL_NUMBER_OF_SUBBASIN:
         print(selectdata.shape)
@@ -50,6 +75,11 @@ def csv2shapefile(csvfile):
         print(selectdata.head())
         print(selectdata.tail())
 
+    print(selectdata.head(4))
+    valuedata = selectdata[['value']]
+    print(valuedata.iloc[0])
+    
+    addvalue2shpfile(valuedata)
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
