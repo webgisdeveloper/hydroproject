@@ -40,6 +40,13 @@ def addvalue2shpfile(value_list,newshpfile="data/test.shp", fieldname="value"):
         w.shape(r.shape(i))
 
     w.close()
+    # write prj file
+    prjfile = newshpfile.replace(".shp",".prj")
+
+    with open(prjfile,"w") as prj:
+        prj.write("""GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.25722
+3563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]""")
+
 
 def csv2shapefile(csvfile):
     """ main module to process csv file and generate shapefile"""
