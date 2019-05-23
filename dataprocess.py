@@ -71,20 +71,21 @@ def csv2shapefile(csvfile):
     # drop the first column
     data.drop(data.columns[[0]],axis=1,inplace=True)
 
-    selectdata = data[(data['variable']=="ETmm") & (data['period']=="hist") & (data["rcp"]=="hist")]
-    # drop duplicates data
+    selectdata = data[(data['variable']=="ETmm") & (data['period']=="hist") & (data["rcp"]=="hist")][["subbasin","value"]]
+    # for duplicates data, get the mean values
     if selectdata.shape[0] > TOTAL_NUMBER_OF_SUBBASIN:
-        print(selectdata.shape)
-        selectdata = selectdata.drop_duplicates(subset=["subbasin"])
-        print(selectdata.shape)
-        print(selectdata.head())
-        print(selectdata.tail())
+        #print(selectdata.shape)
+        #print(selectdata.head())
+        #selectdata = selectdata.drop_duplicates(subset=["subbasin"])
+        valuedata = selectdata.groupby('subbasin').mean()
+    else:
+        valuedata = selectdata[["subbasin","value"]]
+        valuedata.set_index(['subbasin'],inplace=True, drop=True)
 
-    print(selectdata.head(4))
-    valuedata = selectdata[['value']]
-    print(valuedata.iloc[0])
-    
-    addvalue2shpfile(valuedata)
+    #print(valuedata.shape)
+    #print(valuedata.head())
+    #print(valuedata.loc[[1,2]])
+    #addvalue2shpfile(valuedata)
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
