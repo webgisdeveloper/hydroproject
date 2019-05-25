@@ -71,8 +71,9 @@ def csv2shapefile(csvfile):
     # drop the first column
     data.drop(data.columns[[0]],axis=1,inplace=True)
 
-    selectdata = data[(data['variable']=="ETmm") & (data['period']=="hist") & (data["rcp"]=="hist")][["subbasin","value"]]
+    selectdata = data[(data['variable']=="ETmm") & (data['period']=="2080") & (data["rcp"]=="45")][["subbasin","value"]]
     # for duplicates data, get the mean values
+    # valuedata: subbasin (index), value
     if selectdata.shape[0] > TOTAL_NUMBER_OF_SUBBASIN:
         #print(selectdata.shape)
         #print(selectdata.head())
@@ -81,11 +82,11 @@ def csv2shapefile(csvfile):
     else:
         valuedata = selectdata[["subbasin","value"]]
         valuedata.set_index(['subbasin'],inplace=True, drop=True)
-
+    #pd.concat(dfs2, axis=1, sort=False, join='inner') unqiue index join
     #print(valuedata.shape)
     #print(valuedata.head())
     #print(valuedata.loc[[1,2]])
-    #addvalue2shpfile(valuedata)
+    addvalue2shpfile(valuedata,newshpfile="data/ETmm_2080_45")
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
