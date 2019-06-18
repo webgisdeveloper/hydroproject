@@ -40,8 +40,9 @@ def addvalue2shpfile(value_list,newshpfile="data/test.shp", fieldname="value"):
         w.shape(r.shape(i))
 
     w.close()
+    
     # write prj file
-    prjfile = newshpfile.replace(".shp",".prj")
+    prjfile = os.path.splitext(newshpfile)[0] + ".prj"
 
     with open(prjfile,"w") as prj:
         prj.write(EPSG_4326)
